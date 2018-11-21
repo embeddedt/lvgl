@@ -192,17 +192,21 @@ bool lv_roller_get_hor_fit(const lv_obj_t * roller)
  *  */
 lv_style_t * lv_roller_get_style(const lv_obj_t * roller, lv_roller_style_t type)
 {
+    lv_style_t * style = NULL;
+
     switch(type) {
         case LV_ROLLER_STYLE_BG:
-            return lv_obj_get_style(roller);
+            style = lv_obj_get_style(roller);
+            break;
         case LV_ROLLER_STYLE_SEL:
-            return lv_ddlist_get_style(roller, LV_DDLIST_STYLE_SEL);
+            style = lv_ddlist_get_style(roller, LV_DDLIST_STYLE_SEL);
+            break;
         default:
-            return NULL;
+            style = NULL;
+            break;
     }
 
-    /*To avoid warning*/
-    return NULL;
+    return style;
 }
 
 /**********************
@@ -416,6 +420,7 @@ static lv_res_t lv_roller_scrl_signal(lv_obj_t * roller_scrl, lv_signal_t sign, 
         if(id < 0) id = 0;
         if(id >= ext->ddlist.option_cnt) id = ext->ddlist.option_cnt - 1;
         ext->ddlist.sel_opt_id = id;
+        ext->ddlist.sel_opt_id_ori = id;
         if(ext->ddlist.action) res = ext->ddlist.action(roller);
     } else if(sign == LV_SIGNAL_RELEASED) {
         /*If picked an option by clicking then set it*/
@@ -427,6 +432,7 @@ static lv_res_t lv_roller_scrl_signal(lv_obj_t * roller_scrl, lv_signal_t sign, 
             if(id < 0) id = 0;
             if(id >= ext->ddlist.option_cnt) id = ext->ddlist.option_cnt - 1;
             ext->ddlist.sel_opt_id = id;
+            ext->ddlist.sel_opt_id_ori = id;
             if(ext->ddlist.action) res = ext->ddlist.action(roller);
         }
     }

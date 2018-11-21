@@ -360,10 +360,13 @@ lv_res_t lv_obj_del(lv_obj_t * obj)
 void lv_obj_clean(lv_obj_t * obj)
 {
     lv_obj_t * child = lv_obj_get_child(obj, NULL);
-
+    lv_obj_t * child_next;
     while(child) {
+        /* Read the next child before deleting the current
+         * because the next couldn't be read from a deleted (invalid) node*/
+        child_next = lv_obj_get_child(obj, child);
         lv_obj_del(child);
-        child = lv_obj_get_child(obj, child);
+        child = child_next;
     }
 }
 
@@ -1137,13 +1140,15 @@ lv_obj_t * lv_obj_get_parent(const lv_obj_t * obj)
  */
 lv_obj_t * lv_obj_get_child(const lv_obj_t * obj, const lv_obj_t * child)
 {
+    lv_obj_t * result = NULL;
+
     if(child == NULL) {
-        return lv_ll_get_head(&obj->child_ll);
+        result = lv_ll_get_head(&obj->child_ll);
     } else {
-        return lv_ll_get_next(&obj->child_ll, child);
+        result = lv_ll_get_next(&obj->child_ll, child);
     }
 
-    return NULL;
+    return result;
 }
 
 /**
@@ -1155,13 +1160,15 @@ lv_obj_t * lv_obj_get_child(const lv_obj_t * obj, const lv_obj_t * child)
  */
 lv_obj_t * lv_obj_get_child_back(const lv_obj_t * obj, const lv_obj_t * child)
 {
+    lv_obj_t * result = NULL;
+
     if(child == NULL) {
-        return lv_ll_get_tail(&obj->child_ll);
+        result = lv_ll_get_tail(&obj->child_ll);
     } else {
-        return lv_ll_get_prev(&obj->child_ll, child);
+        result = lv_ll_get_prev(&obj->child_ll, child);
     }
 
-    return NULL;
+    return result;
 }
 
 /**
